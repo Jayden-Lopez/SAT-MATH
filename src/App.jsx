@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { db } from './firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { RefreshCw, Lightbulb, CheckCircle, XCircle, Calendar, Target, BookOpen, ArrowRight, Settings, TrendingDown, Award, BarChart3, Lock, Unlock } from 'lucide-react';
 
 const AdvancedMathTutorial = () => {
@@ -58,6 +60,20 @@ const AdvancedMathTutorial = () => {
 
   useEffect(() => {
     localStorage.setItem('jaydenMathStats', JSON.stringify(stats));
+    // Also save to Firebase
+    const saveToFirebase = async () => {
+      try {
+        await setDoc(doc(db, 'users', 'jayden'), {
+          stats: stats,
+          lastUpdated: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error('Error saving to Firebase:', error);
+      }
+    };
+    if (stats.totalProblems > 0) {
+      saveToFirebase();
+    }
   }, [stats]);
 
   const satDate = new Date('2025-12-07');
