@@ -39,6 +39,22 @@ const AdvancedMathTutorial = () => {
     };
   });
 
+  // Load from Firebase on startup
+  useEffect(() => {
+    const loadFromFirebase = async () => {
+      try {
+        const docRef = doc(db, 'users', 'jayden');
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setStats(docSnap.data().stats);
+        }
+      } catch (error) {
+        console.error('Error loading from Firebase:', error);
+      }
+    };
+    loadFromFirebase();
+  }, []);
+
   useEffect(() => {
     const today = new Date().toDateString();
     if (stats.lastDate !== today) {
