@@ -432,7 +432,7 @@ const AdvancedMathTutorial = () => {
   };
 
   const handleParentLogin = () => {
-    if (passwordInput === 'parent2025' || passwordInput === parentPassword) {
+    if (passwordInput === parentPassword) {
       setParentMode(true);
       setIsLocked(false);
       setPasswordInput('');
@@ -440,6 +440,23 @@ const AdvancedMathTutorial = () => {
       alert('Incorrect password');
     }
   };
+
+  const changePassword = () => {
+  if (!newPassword || newPassword.length < 4) {
+    alert('Password must be at least 4 characters');
+    return;
+  }
+  if (newPassword !== confirmPassword) {
+    alert('Passwords do not match');
+    return;
+  }
+  setParentPassword(newPassword);
+  localStorage.setItem('parentPassword', newPassword);
+  setNewPassword('');
+  setConfirmPassword('');
+  setShowPasswordChange(false);
+  alert('Password updated successfully!');
+};
 
   const resetAllProgress = () => {
     if (window.confirm('Are you sure you want to reset ALL progress? This cannot be undone.')) {
@@ -487,21 +504,96 @@ const AdvancedMathTutorial = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 p-4 md:p-6">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <Settings className="w-8 h-8 text-slate-600" />
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-800">Parent Dashboard</h1>
-                  <p className="text-gray-600">Monitor Jayden's progress and identify areas needing support</p>
-                </div>
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-4">Settings</h2>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Daily Goal (problems per day)
+                </label>
+                <select 
+                  value={stats.dailyGoal}
+                  onChange={(e) => changeDailyGoal(e.target.value)}
+                  className="border-2 border-gray-300 rounded-lg p-2"
+                >
+                  <option value="5">5 problems</option>
+                  <option value="10">10 problems (recommended)</option>
+                  <option value="15">15 problems</option>
+                  <option value="20">20 problems</option>
+                </select>
               </div>
-              <button
-                onClick={() => setParentMode(false)}
-                className="bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700"
-              >
-                Back to Practice
-              </button>
+
+              <div className="pt-4 border-t">
+                <h3 className="font-semibold text-gray-800 mb-3">Change Parent Password</h3>
+                {!showPasswordChange ? (
+                  <button
+                    onClick={() => setShowPasswordChange(true)}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+                  >
+                    Update Password
+                  </button>
+                ) : (
+                  <div className="space-y-3 bg-blue-50 p-4 rounded-lg">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        New Password (min 4 characters)
+                      </label>
+                      <input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full border-2 border-gray-300 rounded-lg p-2"
+                        placeholder="Enter new password"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Confirm Password
+                      </label>
+                      <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="w-full border-2 border-gray-300 rounded-lg p-2"
+                        placeholder="Confirm new password"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={changePassword}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                      >
+                        Save Password
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowPasswordChange(false);
+                          setNewPassword('');
+                          setConfirmPassword('');
+                        }}
+                        className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-600">
+                      Current password: {parentPassword}
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="pt-4 border-t">
+                <button
+                  onClick={resetAllProgress}
+                  className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700"
+                >
+                  Reset All Progress
+                </button>
+                <p className="text-sm text-gray-600 mt-2">
+                  This will delete all progress data. Use only if starting fresh.
+                </p>
+              </div>
             </div>
           </div>
 
