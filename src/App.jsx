@@ -39,17 +39,26 @@ const AdvancedMathTutorial = () => {
     };
   });
 
-  // Load from Firebase on startup
+  // Load from Firebase on startup - ALWAYS prioritize Firebase
   useEffect(() => {
     const loadFromFirebase = async () => {
       try {
         const docRef = doc(db, 'users', 'jayden');
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setStats(docSnap.data().stats);
+          const firebaseStats = docSnap.data().stats;
+          setStats(firebaseStats);
+          // Also save to localStorage so it's available offline
+          localStorage.setItem('jaydenMathStats', JSON.stringify(firebaseStats));
+          console.log('Loaded from Firebase:', firebaseStats);
         }
       } catch (error) {
         console.error('Error loading from Firebase:', error);
+        // If Firebase fails, fall back to localStorage
+        const saved = localStorage.getItem('jaydenMathStats');
+        if (saved) {
+          setStats(JSON.parse(saved));
+        }
       }
     };
     loadFromFirebase();
