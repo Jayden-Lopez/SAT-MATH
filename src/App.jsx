@@ -189,123 +189,198 @@ const AdvancedMathTutorial = () => {
   };
 
   const generateProblem = (selectedTopic) => {
-    const problems = {
-      quadratics: () => {
-        const type = Math.floor(Math.random() * 2);
+  // Calculate difficulty level based on topic performance
+  const topicData = stats.topicProgress[selectedTopic];
+  let difficultyLevel = 'easy'; // Start easy
+  
+  if (topicData && topicData.total >= 5) {
+    const accuracy = (topicData.correct / topicData.total) * 100;
+    if (accuracy >= 80) {
+      difficultyLevel = 'hard'; // Mastered - give hard problems
+    } else if (accuracy >= 60) {
+      difficultyLevel = 'medium'; // Improving - give medium problems
+    }
+    // Below 60% stays on easy
+  }
+  
+  console.log(`Generating ${difficultyLevel} problem for ${selectedTopic}. Accuracy: ${topicData ? ((topicData.correct / topicData.total) * 100).toFixed(0) : 0}%`);
+
+  const problems = {
+    quadratics: () => {
+      if (difficultyLevel === 'easy') {
+        // Easy: Simple factoring with small numbers
+        const root1 = Math.floor(Math.random() * 3) + 1; // 1-3
+        const root2 = Math.floor(Math.random() * 3) + 1; // 1-3
+        const b = -(root1 + root2);
+        const c = root1 * root2;
         
-        if (type === 0) {
-          const root1 = Math.floor(Math.random() * 5) + 1;
-          const root2 = Math.floor(Math.random() * 5) + 1;
-          const b = -(root1 + root2);
-          const c = root1 * root2;
-          
-          return {
-            question: `Factor and solve: x² ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c} = 0\n\nGive both solutions separated by comma (smaller first).`,
-            answer: `${Math.min(root1, root2)},${Math.max(root1, root2)}`,
-            type: 'text',
-            hints: [
-              {
-                title: "Let's Start From Zero",
-                content: `We need to factor: x² ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c}\n\nFactoring means rewriting this as two parts multiplied together:\n(x + ?)(x + ?) = 0\n\nWhy? Because if two things multiply to give zero, one of them MUST be zero!`
-              },
-              {
-                title: "Finding the Magic Numbers",
-                content: `We need two numbers that:\n1. MULTIPLY to give ${c}\n2. ADD to give ${b}\n\nThe answer: ${root1} and ${root2}\nCheck: ${root1} × ${root2} = ${c} ✓`
-              },
-              {
-                title: "Solving for x",
-                content: `(x - ${root1})(x - ${root2}) = 0\n\nEither x - ${root1} = 0  →  x = ${root1}\nOr x - ${root2} = 0  →  x = ${root2}\n\nSolutions: x = ${Math.min(root1, root2)} and x = ${Math.max(root1, root2)}`
-              }
-            ],
-            difficulty: 'Medium',
-            satSection: 'Passport to Advanced Math'
-          };
-        } else {
-          const a = 1;
-          const b = Math.floor(Math.random() * 8) + 2;
-          const c = Math.floor(Math.random() * 5) + 1;
-          const discriminant = b * b - 4 * a * c;
-          const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
-          
-          return {
-            question: `Use the quadratic formula to solve:\nx² + ${b}x + ${c} = 0\n\nGive the larger solution (round to 2 decimals).`,
-            answer: x1.toFixed(2),
-            type: 'numeric',
-            hints: [
-              {
-                title: "The Quadratic Formula",
-                content: `x = [-b ± √(b² - 4ac)] / (2a)\n\nFor our equation: a = 1, b = ${b}, c = ${c}`
-              },
-              {
-                title: "Calculate the Discriminant",
-                content: `b² - 4ac = ${b}² - 4(1)(${c}) = ${discriminant}`
-              },
-              {
-                title: "Apply the Formula",
-                content: `x = [-${b} + √${discriminant}] / 2 = ${x1.toFixed(2)}`
-              }
-            ],
-            difficulty: 'Hard',
-            satSection: 'Passport to Advanced Math'
-          };
-        }
-      },
-      
-      exponents: () => {
-        const type = Math.floor(Math.random() * 2);
+        return {
+          question: `Factor and solve: x² ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c} = 0\n\nGive both solutions separated by comma (smaller first).`,
+          answer: `${Math.min(root1, root2)},${Math.max(root1, root2)}`,
+          type: 'text',
+          hints: [
+            {
+              title: "Let's Start From Zero",
+              content: `We need to factor: x² ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c}\n\nFactoring means rewriting this as two parts multiplied together:\n(x + ?)(x + ?) = 0\n\nWhy? Because if two things multiply to give zero, one of them MUST be zero!`
+            },
+            {
+              title: "Finding the Magic Numbers",
+              content: `We need two numbers that:\n1. MULTIPLY to give ${c}\n2. ADD to give ${b}\n\nThe answer: ${root1} and ${root2}\nCheck: ${root1} × ${root2} = ${c} ✓`
+            },
+            {
+              title: "Solving for x",
+              content: `(x - ${root1})(x - ${root2}) = 0\n\nEither x - ${root1} = 0  →  x = ${root1}\nOr x - ${root2} = 0  →  x = ${root2}\n\nSolutions: x = ${Math.min(root1, root2)} and x = ${Math.max(root1, root2)}`
+            }
+          ],
+          difficulty: 'Easy',
+          satSection: 'Passport to Advanced Math'
+        };
+      } else if (difficultyLevel === 'medium') {
+        // Medium: Larger numbers or negative roots
+        const root1 = Math.floor(Math.random() * 5) + 2; // 2-6
+        const root2 = Math.floor(Math.random() * 5) + 2; // 2-6
+        const b = -(root1 + root2);
+        const c = root1 * root2;
         
-        if (type === 0) {
-          const base = [2, 3, 5][Math.floor(Math.random() * 3)];
-          const exp1 = Math.floor(Math.random() * 4) + 2;
-          const exp2 = Math.floor(Math.random() * 3) + 2;
-          const answer = exp1 + exp2;
-          
-          return {
-            question: `Simplify: ${base}^${exp1} × ${base}^${exp2}\n\nExpress as ${base}^n. What is n?`,
-            answer: String(answer),
-            type: 'numeric',
-            hints: [
-              {
-                title: "Multiplication Rule",
-                content: `When multiplying same bases: ADD exponents\n\na^m × a^n = a^(m+n)`
-              },
-              {
-                title: "Apply the Rule",
-                content: `${base}^${exp1} × ${base}^${exp2} = ${base}^(${exp1}+${exp2}) = ${base}^${answer}`
-              }
-            ],
-            difficulty: 'Easy',
-            satSection: 'Passport to Advanced Math'
-          };
-        } else {
-          const base = [2, 3, 4][Math.floor(Math.random() * 3)];
-          const exp = Math.floor(Math.random() * 3) + 2;
-          const answer = 1 / Math.pow(base, exp);
-          
-          return {
-            question: `Evaluate: ${base}^(-${exp})\n\nExpress as a decimal (round to 4 decimals).`,
-            answer: answer.toFixed(4),
-            type: 'numeric',
-            hints: [
-              {
-                title: "Negative Exponent Rule",
-                content: `a^(-n) = 1/(a^n)\n\nNegative exponent means "flip it"`
-              },
-              {
-                title: "Calculate",
-                content: `${base}^(-${exp}) = 1/(${base}^${exp}) = 1/${Math.pow(base, exp)} = ${answer.toFixed(4)}`
-              }
-            ],
-            difficulty: 'Medium',
-            satSection: 'Passport to Advanced Math'
-          };
-        }
-      },
-      
-      functions: () => {
-        const a = Math.floor(Math.random() * 5) + 2;
-        const b = Math.floor(Math.random() * 8) + 1;
-        const input = Math.floor(Math.random() * 6) + 1;
+        return {
+          question: `Factor and solve: x² ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c} = 0\n\nGive both solutions separated by comma (smaller first).`,
+          answer: `${Math.min(root1, root2)},${Math.max(root1, root2)}`,
+          type: 'text',
+          hints: [
+            {
+              title: "Let's Start From Zero",
+              content: `We need to factor: x² ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c}\n\nFactoring means rewriting this as two parts multiplied together:\n(x + ?)(x + ?) = 0`
+            },
+            {
+              title: "Finding the Numbers",
+              content: `We need two numbers that:\n1. MULTIPLY to give ${c}\n2. ADD to give ${b}\n\nTry different factor pairs of ${c} until you find the pair that adds to ${b}.`
+            },
+            {
+              title: "Solution",
+              content: `The answers are ${root1} and ${root2}\n(x - ${root1})(x - ${root2}) = 0\nSolutions: x = ${Math.min(root1, root2)}, ${Math.max(root1, root2)}`
+            }
+          ],
+          difficulty: 'Medium',
+          satSection: 'Passport to Advanced Math'
+        };
+      } else {
+        // Hard: Quadratic formula required
+        const a = 1;
+        const b = Math.floor(Math.random() * 8) + 2;
+        const c = Math.floor(Math.random() * 5) + 1;
+        const discriminant = b * b - 4 * a * c;
+        const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+        
+        return {
+          question: `Use the quadratic formula to solve:\nx² + ${b}x + ${c} = 0\n\nGive the larger solution (round to 2 decimals).`,
+          answer: x1.toFixed(2),
+          type: 'numeric',
+          hints: [
+            {
+              title: "The Quadratic Formula",
+              content: `x = [-b ± √(b² - 4ac)] / (2a)\n\nFor our equation: a = 1, b = ${b}, c = ${c}`
+            },
+            {
+              title: "Calculate the Discriminant",
+              content: `b² - 4ac = ${b}² - 4(1)(${c}) = ${discriminant}`
+            },
+            {
+              title: "Apply the Formula",
+              content: `x = [-${b} + √${discriminant}] / 2 = ${x1.toFixed(2)}`
+            }
+          ],
+          difficulty: 'Hard',
+          satSection: 'Passport to Advanced Math'
+        };
+      }
+    },
+    
+    exponents: () => {
+      if (difficultyLevel === 'easy') {
+        // Easy: Basic multiplication rule
+        const base = [2, 3][Math.floor(Math.random() * 2)];
+        const exp1 = Math.floor(Math.random() * 3) + 2; // 2-4
+        const exp2 = Math.floor(Math.random() * 2) + 1; // 1-2
+        const answer = exp1 + exp2;
+        
+        return {
+          question: `Simplify: ${base}^${exp1} × ${base}^${exp2}\n\nExpress as ${base}^n. What is n?`,
+          answer: String(answer),
+          type: 'numeric',
+          hints: [
+            {
+              title: "Multiplication Rule",
+              content: `When multiplying same bases: ADD exponents\n\na^m × a^n = a^(m+n)`
+            },
+            {
+              title: "Apply the Rule",
+              content: `${base}^${exp1} × ${base}^${exp2} = ${base}^(${exp1}+${exp2}) = ${base}^${answer}`
+            }
+          ],
+          difficulty: 'Easy',
+          satSection: 'Passport to Advanced Math'
+        };
+      } else if (difficultyLevel === 'medium') {
+        // Medium: Division or negative exponents
+        const base = [2, 3, 4][Math.floor(Math.random() * 3)];
+        const exp = Math.floor(Math.random() * 3) + 2;
+        const answer = 1 / Math.pow(base, exp);
+        
+        return {
+          question: `Evaluate: ${base}^(-${exp})\n\nExpress as a decimal (round to 4 decimals).`,
+          answer: answer.toFixed(4),
+          type: 'numeric',
+          hints: [
+            {
+              title: "Negative Exponent Rule",
+              content: `a^(-n) = 1/(a^n)\n\nNegative exponent means "flip it"`
+            },
+            {
+              title: "Calculate",
+              content: `${base}^(-${exp}) = 1/(${base}^${exp}) = 1/${Math.pow(base, exp)} = ${answer.toFixed(4)}`
+            }
+          ],
+          difficulty: 'Medium',
+          satSection: 'Passport to Advanced Math'
+        };
+      } else {
+        // Hard: Combined operations
+        const base = [2, 3, 5][Math.floor(Math.random() * 3)];
+        const exp1 = Math.floor(Math.random() * 4) + 2;
+        const exp2 = Math.floor(Math.random() * 3) + 1;
+        const exp3 = Math.floor(Math.random() * 2) + 1;
+        const answer = exp1 * exp2 - exp3;
+        
+        return {
+          question: `Simplify: (${base}^${exp1})^${exp2} ÷ ${base}^${exp3}\n\nExpress as ${base}^n. What is n?`,
+          answer: String(answer),
+          type: 'numeric',
+          hints: [
+            {
+              title: "Two Rules Combined",
+              content: `Power to a power: (a^m)^n = a^(m×n)\nDivision: a^m ÷ a^n = a^(m-n)`
+            },
+            {
+              title: "Step 1",
+              content: `(${base}^${exp1})^${exp2} = ${base}^(${exp1}×${exp2}) = ${base}^${exp1 * exp2}`
+            },
+            {
+              title: "Step 2",
+              content: `${base}^${exp1 * exp2} ÷ ${base}^${exp3} = ${base}^(${exp1 * exp2}-${exp3}) = ${base}^${answer}`
+            }
+          ],
+          difficulty: 'Hard',
+          satSection: 'Passport to Advanced Math'
+        };
+      }
+    },
+    
+    functions: () => {
+      if (difficultyLevel === 'easy') {
+        // Easy: Simple linear function
+        const a = Math.floor(Math.random() * 4) + 2;
+        const b = Math.floor(Math.random() * 6) + 1;
+        const input = Math.floor(Math.random() * 5) + 1;
         const answer = a * input + b;
         
         return {
@@ -325,11 +400,67 @@ const AdvancedMathTutorial = () => {
           difficulty: 'Easy',
           satSection: 'Passport to Advanced Math'
         };
-      },
-      
-      polynomials: () => {
-        const a = Math.floor(Math.random() * 5) + 2;
-        const b = Math.floor(Math.random() * 5) + 2;
+      } else if (difficultyLevel === 'medium') {
+        // Medium: Quadratic function
+        const a = Math.floor(Math.random() * 3) + 1;
+        const b = Math.floor(Math.random() * 6) - 3;
+        const input = Math.floor(Math.random() * 4) + 2;
+        const answer = a * input * input + b;
+        
+        return {
+          question: `If g(x) = ${a}x² ${b >= 0 ? '+' : ''}${b}, what is g(${input})?`,
+          answer: String(answer),
+          type: 'numeric',
+          hints: [
+            {
+              title: "With Exponents",
+              content: `Replace x with ${input}: g(${input}) = ${a}(${input})² ${b >= 0 ? '+' : ''}${b}`
+            },
+            {
+              title: "Calculate",
+              content: `= ${a}(${input * input}) ${b >= 0 ? '+' : ''}${b} = ${a * input * input} ${b >= 0 ? '+' : ''}${b} = ${answer}`
+            }
+          ],
+          difficulty: 'Medium',
+          satSection: 'Passport to Advanced Math'
+        };
+      } else {
+        // Hard: Composite functions
+        const a = Math.floor(Math.random() * 3) + 2;
+        const b = Math.floor(Math.random() * 4) + 1;
+        const input = Math.floor(Math.random() * 3) + 2;
+        const gResult = input * input;
+        const answer = a * gResult + b;
+        
+        return {
+          question: `If f(x) = ${a}x + ${b} and g(x) = x², what is f(g(${input}))?`,
+          answer: String(answer),
+          type: 'numeric',
+          hints: [
+            {
+              title: "Composite Functions",
+              content: `f(g(${input})) means: First find g(${input}), then plug that into f`
+            },
+            {
+              title: "Step 1: Find g(${input})",
+              content: `g(${input}) = ${input}² = ${gResult}`
+            },
+            {
+              title: "Step 2: Find f(${gResult})",
+              content: `f(${gResult}) = ${a}(${gResult}) + ${b} = ${a * gResult} + ${b} = ${answer}`
+            }
+          ],
+          difficulty: 'Hard',
+          satSection: 'Passport to Advanced Math'
+        };
+      }
+    },
+    
+    polynomials: () => {
+      if (difficultyLevel === 'easy') {
+        // Easy: Small numbers FOIL
+        const a = Math.floor(Math.random() * 3) + 2;
+        const b = Math.floor(Math.random() * 3) + 2;
         const answerC = a + b;
         
         return {
@@ -342,18 +473,65 @@ const AdvancedMathTutorial = () => {
               content: `First: x × x = x²\nOutside: x × ${b} = ${b}x\nInside: ${a} × x = ${a}x\nLast: ${a} × ${b} = ${a * b}`
             },
             {
-              title: "Combine Like Terms",
-              content: `x² + ${b}x + ${a}x + ${a * b}\n= x² + ${answerC}x + ${a * b}\n\nCoefficient of x is ${answerC}`
+              title: "Combine",
+              content: `x² + ${b}x + ${a}x + ${a * b} = x² + ${answerC}x + ${a * b}`
+            }
+          ],
+          difficulty: 'Easy',
+          satSection: 'Passport to Advanced Math'
+        };
+      } else if (difficultyLevel === 'medium') {
+        // Medium: Larger numbers or negatives
+        const a = Math.floor(Math.random() * 6) + 3;
+        const b = Math.floor(Math.random() * 6) + 3;
+        const answerC = a + b;
+        
+        return {
+          question: `Multiply: (x + ${a})(x + ${b})\n\nWhat is the coefficient of x in the result?`,
+          answer: String(answerC),
+          type: 'numeric',
+          hints: [
+            {
+              title: "FOIL Method",
+              content: `First: x × x = x²\nOutside: x × ${b} = ${b}x\nInside: ${a} × x = ${a}x\nLast: ${a} × ${b} = ${a * b}`
+            },
+            {
+              title: "Combine",
+              content: `The x terms: ${b}x + ${a}x = ${answerC}x`
             }
           ],
           difficulty: 'Medium',
           satSection: 'Passport to Advanced Math'
         };
+      } else {
+        // Hard: With subtraction
+        const a = Math.floor(Math.random() * 5) + 3;
+        const b = Math.floor(Math.random() * 4) + 2;
+        const answerC = a - b;
+        
+        return {
+          question: `Multiply: (x + ${a})(x - ${b})\n\nWhat is the coefficient of x in the result?`,
+          answer: String(answerC),
+          type: 'numeric',
+          hints: [
+            {
+              title: "FOIL with Negative",
+              content: `First: x × x = x²\nOutside: x × (-${b}) = -${b}x\nInside: ${a} × x = ${a}x\nLast: ${a} × (-${b}) = -${a * b}`
+            },
+            {
+              title: "Combine",
+              content: `The x terms: ${a}x - ${b}x = ${answerC}x`
+            }
+          ],
+          difficulty: 'Hard',
+          satSection: 'Passport to Advanced Math'
+        };
       }
-    };
-
-    return problems[selectedTopic]();
+    }
   };
+
+  return problems[selectedTopic]();
+};
 
   const checkAnswer = () => {
     const userAns = userAnswer.trim().toLowerCase().replace(/\s/g, '');
