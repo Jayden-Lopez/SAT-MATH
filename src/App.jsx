@@ -24,45 +24,51 @@ const AdvancedMathTutorial = () => {
     return saved || '1234';
   });
   
-  const [stats, setStats] = useState(() => {
-    const saved = localStorage.getItem('jaydenMathStats');
-    return saved ? JSON.parse(saved) : {
-      dailyGoal: 10,
-      todayCount: 0,
-      lastDate: new Date().toDateString(),
-      totalProblems: 0,
-      correct: 0,
-      topicProgress: {},
-      dailyHistory: [],
-      strugglingTopics: [],
-      recentErrors: []
-    };
-  });
+  const [stats, setStats] = useState({
+  dailyGoal: 10,
+  todayCount: 0,
+  lastDate: new Date().toDateString(),
+  totalProblems: 0,
+  correct: 0,
+  topicProgress: {},
+  dailyHistory: [],
+  strugglingTopics: [],
+  recentErrors: []
+});
 
   // Load from Firebase on startup - ALWAYS prioritize Firebase
   useEffect(() => {
-    const loadFromFirebase = async () => {
-      try {
-        const docRef = doc(db, 'users', 'jayden');
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const firebaseStats = docSnap.data().stats;
-          setStats(firebaseStats);
-          // Also save to localStorage so it's available offline
-          localStorage.setItem('jaydenMathStats', JSON.stringify(firebaseStats));
-          console.log('Loaded from Firebase:', firebaseStats);
-        }
-      } catch (error) {
-        console.error('Error loading from Firebase:', error);
-        // If Firebase fails, fall back to localStorage
+  const loadFromFirebase = async () => {
+    try {
+      const docRef = doc(db, 'users', 'jayden');
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const firebaseStats = docSnap.data().stats;
+        setStats(firebaseStats);
+        // Also save to localStorage so it's available offline
+        localStorage.setItem('jaydenMathStats', JSON.stringify(firebaseStats));
+        console.log('✅ Loaded from Firebase:', firebaseStats);
+      } else {
+        // No Firebase data - try localStorage as backup
         const saved = localStorage.getItem('jaydenMathStats');
         if (saved) {
-          setStats(JSON.parse(saved));
+          const localStats = JSON.parse(saved);
+          setStats(localStats);
+          console.log('⚠️ Loaded from localStorage (no Firebase data)');
         }
       }
-    };
-    loadFromFirebase();
-  }, []);
+    } catch (error) {
+      console.error('❌ Error loading from Firebase:', error);
+      // If Firebase fails, fall back to localStorage
+      const saved = localStorage.getItem('jaydenMathStats');
+      if (saved) {
+        setStats(JSON.parse(saved));
+        console.log('⚠️ Loaded from localStorage (Firebase error)');
+      }
+    }
+  };
+  loadFromFirebase();
+}, []);
 
   useEffect(() => {
     const today = new Date().toDateString();
