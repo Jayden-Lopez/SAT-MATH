@@ -85,7 +85,7 @@ const AdvancedMathTutorial = () => {
 
   useEffect(() => {
   localStorage.setItem('jaydenMathStats', JSON.stringify(stats));
-  // Also save to Firebase
+  
   const saveToFirebase = async () => {
     try {
       await setDoc(doc(db, 'users', 'jayden'), {
@@ -97,7 +97,11 @@ const AdvancedMathTutorial = () => {
       console.error('❌ Error saving to Firebase:', error);
     }
   };
-  saveToFirebase();
+  
+  // Only save if we have actual progress (not initial load)
+  if (stats.totalProblems > 0) {
+    saveToFirebase();
+  }
 }, [stats]);
 
   const satDate = new Date('2025-12-07');
