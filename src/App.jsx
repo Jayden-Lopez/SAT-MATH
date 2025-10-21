@@ -84,22 +84,21 @@ const AdvancedMathTutorial = () => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('jaydenMathStats', JSON.stringify(stats));
-    // Also save to Firebase
-    const saveToFirebase = async () => {
-      try {
-        await setDoc(doc(db, 'users', 'jayden'), {
-          stats: stats,
-          lastUpdated: new Date().toISOString()
-        });
-      } catch (error) {
-        console.error('Error saving to Firebase:', error);
-      }
-    };
-    if (stats.totalProblems > 0) {
-      saveToFirebase();
+  localStorage.setItem('jaydenMathStats', JSON.stringify(stats));
+  // Also save to Firebase
+  const saveToFirebase = async () => {
+    try {
+      await setDoc(doc(db, 'users', 'jayden'), {
+        stats: stats,
+        lastUpdated: new Date().toISOString()
+      });
+      console.log('✅ Saved to Firebase successfully');
+    } catch (error) {
+      console.error('❌ Error saving to Firebase:', error);
     }
-  }, [stats]);
+  };
+  saveToFirebase();
+}, [stats]);
 
   const satDate = new Date('2025-12-07');
   const today = new Date();
